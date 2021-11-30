@@ -30,3 +30,5 @@ fp-info-cache
 *-drc.txt
 *-erc.txt
 **/KiBotOutput
+
+*.zip

@@ -1,10 +1,4 @@
-# This workflow generates documentation (PDFs, interactive BOMs, board images) and fabrication
-# files for JLCPCB and PCBWay. The version number and date of the design is automatically
-# updated in the schematic file and on the PCB based on the GitHub release version and date.
-
-# To use this workflow in your own repo you need to edit the environment variables in the env: section
-# below.
-name: "Kibot - Release"
+name: "Release"
 
 on:
   release:
@@ -16,14 +10,16 @@ on:
         required: true
         default: "pre-release"
 
+env:
+  # Set this to your local timezone. See https://www.wikiwand.com/en/List_of_tz_database_time_zones for valid strings.
+  Timezone: UTC
+  # Set this to the output folder for all of the generated files. Unless you have a very
+  # good reason to change this you should leave it as KiBotOutput.
+  OutputFolder: KiBotOutput
+  Project: ${{ github.event.repository.name }}
+
 jobs:
-  Documentation:
-    env:
-      # Set this to your local timezone. See https://www.wikiwand.com/en/List_of_tz_database_time_zones for valid strings.
-      Timezone: UTC
-      # Set this to the output folder for all of the generated files. Unless you have a very
-      # good reason to change this you should leave it as KiBotOutput.
-      OutputFolder: KiBotOutput
+  Kibot:
     runs-on: ubuntu-latest
 
     # These are all the steps that generate the files.
@@ -53,16 +49,13 @@ jobs:
         id: get_date
         run: echo "::set-output name=date::$(TZ='${{ env.Timezone }}' date +'%Y-%m-%d %T')"
 
-      # Do a string replacement in the schematic file to set the version and date.
-      # Any instance of %%version%% in the schematic gets replaced with the release version.
-      # Any instance of %%date%% in the schematic gets replaced with the release date and time.
+      # do string replacement in schematic files
       - name: Set schematic version
         uses: jacobtomlinson/gha-find-replace@v1
         with:
           include: ".*.sch"
           find: "%%version%%"
           replace: ${{ env.version }}
-
       - name: Set schematic date
         uses: jacobtomlinson/gha-find-replace@v1
         with:
@@ -70,23 +63,19 @@ jobs:
           find: "%%date%%"
           replace: ${{ steps.get_date.outputs.date }}
 
-      # Do a string replacement in the PCB file to set the version and date.
-      # Any instance of %%version%% in the schematic gets replaced with the release version.
-      # Any instance of %%date%% in the schematic gets replaced with the release date and time.
+      # do string replacement in design files
       - name: Set PCB version
         uses: jacobtomlinson/gha-find-replace@v1
         with:
           include: ".*.kicad_pcb"
           find: "%%version%%"
           replace: ${{ env.version }}
-
       - name: Set PCB date in page settings
         uses: jacobtomlinson/gha-find-replace@v1
         with:
           include: ".*.kicad_pcb"
           find: "date %%date%%"
           replace: 'date "${{ steps.get_date.outputs.date }}"'
-
       - name: Set PCB date on PCB layers
         uses: jacobtomlinson/gha-find-replace@v1
         with:
@@ -94,135 +83,39 @@ jobs:
           find: "%%date%%"
           replace: ${{ steps.get_date.outputs.date }}
 
-      # Actually run KiBot to generate all the files. The KiBot script used is
-      # in the .kibot/ folder.
+      # Actually run KiBot to generate all the files.
       - name: Generate documentation files
         uses: INTI-CMNB/KiBot@master
         with:
           config: .kibot/documentation.kibot.yaml
           dir: ${{ env.OutputFolder }}
-          schema: ${{ github.event.repository.name }}.sch
-          board: ${{ github.event.repository.name }}.kicad_pcb
-
-      # Archive all the artifacts from output and attach to the action's results.
-      # This is so they're made available when this workflow is run manually from the
-      # GitHub actions page.
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ github.event.repository.name }}-docs
-          path: ${{ env.OutputFolder }}/**
-
-
-  Fabrication:
-    env:
-      # Set this to your local timezone. See https://www.wikiwand.com/en/List_of_tz_database_time_zones for valid strings.
-      Timezone: UTC
-      # Set this to the output folder for all of the generated files. Unless you have a very
-      # good reason to change this you should leave it as KiBotOutput.
-      OutputFolder: KiBotOutput
-    runs-on: ubuntu-latest
-
-    # These are all the steps that generate the files.
-    steps:
-      # Check out the files
-      - uses: actions/checkout@v2
-
-      # Get the version of the GitHub release for use later.
-      - name: Get GitHub release version
-        id: get_github_version
-        uses: battila7/get-version-action@v2
-        if: startsWith(github.ref, 'refs/tags/')
-      - name: Store GitHub release version
-        id: save_github_version
-        run: echo "version=${{ steps.get_github_version.outputs.version }}" >> $GITHUB_ENV
-        if: startsWith(github.ref, 'refs/tags/')
-
-      # Get the version from the workflow input. This is only valid
-      # when run manually as a workflow.
-      - name: Store workflow version
-        id: save_workflow_version
-        run: echo "version=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-        if: startsWith(github.ref, 'refs/tags/') == false
-
-      # Get the current date and time, in the timezone specified above, for use later.
-      - name: Get current date and time
-        id: get_date
-        run: echo "::set-output name=date::$(TZ='${{ env.Timezone }}' date +'%Y-%m-%d %T')"
-
-      # Do a string replacement in the schematic file to set the version and date.
-      # Any instance of %%version%% in the schematic gets replaced with the release version.
-      # Any instance of %%date%% in the schematic gets replaced with the release date and time.
-      - name: Set schematic version
-        uses: jacobtomlinson/gha-find-replace@v1
-        with:
-          include: ".*.sch"
-          find: "%%version%%"
-          replace: ${{ env.version }}
-
-      - name: Set schematic date
-        uses: jacobtomlinson/gha-find-replace@v1
-        with:
-          include: ".*.sch"
-          find: "%%date%%"
-          replace: ${{ steps.get_date.outputs.date }}
-
-      # Do a string replacement in the PCB file to set the version and date.
-      # Any instance of %%version%% in the schematic gets replaced with the release version.
-      # Any instance of %%date%% in the schematic gets replaced with the release date and time.
-      - name: Set PCB version
-        uses: jacobtomlinson/gha-find-replace@v1
-        with:
-          include: ".*.kicad_pcb"
-          find: "%%version%%"
-          replace: ${{ env.version }}
-
-      - name: Set PCB date in page settings
-        uses: jacobtomlinson/gha-find-replace@v1
-        with:
-          include: ".*.kicad_pcb"
-          find: "date %%date%%"
-          replace: 'date "${{ steps.get_date.outputs.date }}"'
-
-      - name: Set PCB date on PCB layers
-        uses: jacobtomlinson/gha-find-replace@v1
-        with:
-          include: ".*.kicad_pcb"
-          find: "%%date%%"
-          replace: ${{ steps.get_date.outputs.date }}
-
-      # Actually run KiBot to generate all the files. The KiBot script used is
-      # in the .kibot/ folder.
+          schema: ${{ env.Project }}.sch
+          board: ${{ env.Project }}.kicad_pcb
       - name: Generate fabrication files
         uses: INTI-CMNB/KiBot@master
         with:
           config: .kibot/fabrications.kibot.yaml
           dir: ${{ env.OutputFolder }}
-          schema: ${{ github.event.repository.name }}.sch
-          board: ${{ github.event.repository.name }}.kicad_pcb
+          schema: ${{ env.Project }}.sch
+          board: ${{ env.Project }}.kicad_pcb
 
       # Archive all the artifacts from output and attach to the action's results.
-      # This is so they're made available when this workflow is run manually from the
-      # GitHub actions page.
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ github.event.repository.name }}-gerbers
+          name: ${{ env.OutputFolder }}
           path: ${{ env.OutputFolder }}/**
 
 
   Publish:
     runs-on: ubuntu-latest
-    needs: [Documentation, Fabrication]
+    needs: Kibot
 
     steps:
       # Get artifacts of privious jobs
       - uses: actions/download-artifact@v2
         with:
-          name: ${{ github.event.repository.name }}-docs
-      - uses: actions/download-artifact@v2
-        with:
-          name: ${{ github.event.repository.name }}-gerbers
+          name: ${{ env.OutputFolder }}
     
       # Install the zip command line tool to package up the output
       - name: Install zip
@@ -230,13 +123,13 @@ jobs:
 
       # Zip all the documentation.
       - name: Zip JLCPCB fabrication files
-        run: zip -qq -j -m "${{ github.event.repository.name }}-JLCPCB.zip" gerbers/jlcpcb/*.*
+        run: zip -qq -j -m "${{ env.Project }}-JLCPCB.zip" gerbers/jlcpcb/*.*
       - name: Zip Oshpark fabrication files
-        run: zip -qq -j "${{ github.event.repository.name }}-Oshpark.zip" gerbers/*.* docs/bom/*.csv
+        run: zip -qq -j "${{ env.Project }}-Oshpark.zip" gerbers/*.* docs/bom/*.csv
       - name: Zip PCBWay fabrication files
-        run: zip -qq -j "${{ github.event.repository.name }}-PCBWay.zip" gerbers/*.* docs/bom/*.csv
+        run: zip -qq -j "${{ env.Project }}-PCBWay.zip" gerbers/*.* docs/bom/*.csv
       - name: Zip documentation and fabrications
-        run: zip -qq -r "${{ github.event.repository.name }}.zip" docs cad img *.zip
+        run: zip -qq -r "${{ env.Project }}.zip" docs cad img *.zip
 
       # Upload all the zip files to the release.
       - name: Upload release files
@@ -246,10 +139,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: |
-            ${{ github.event.repository.name }}.zip
-            ${{ github.event.repository.name }}-JLCPCB.zip
-            ${{ github.event.repository.name }}-Oshpark.zip
-            ${{ github.event.repository.name }}-PCBWay.zip
+            ${{ env.Project }}.zip
+            ${{ env.Project }}-JLCPCB.zip
+            ${{ env.Project }}-Oshpark.zip
+            ${{ env.Project }}-PCBWay.zip
 
       # Archive all the artifacts from output and attach to the action's results.
       # This is so they're made available when this workflow is run manually from the
@@ -257,5 +150,11 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ github.event.repository.name }}
-          path: .
+          name: gerbers
+          path: ${{ github.workspace }}/*.zip
+
+#  OSHWA:
+#    runs-on: ubuntu-latest
+#    needs: Kibot
+#
+#    steps:

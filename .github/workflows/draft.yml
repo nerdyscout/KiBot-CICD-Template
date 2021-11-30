@@ -1,33 +1,24 @@
-# This workflow generates documentation (PDFs, interactive BOMs, board images) and fabrication
-# The version number and date of the design is automatically updated in the schematic file and on
-# the PCB based on the GitHub release version and date.
-
-# To use this workflow in your own repo you need to edit the environment variables in the env: section
-# below.
-name: "Kibot - Draft"
+name: "draft"
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "Design version"
-        required: true
-        default: "draft"
   pull_request:
     paths:
       - ".*.sch"
       - ".*.kicad_pcb"
       - ".kibot/*.kibot.yaml"
       - ".github/workflows/*.yml"
-       
+
+env:
+  # set this to your kicad project name
+  Project: ${{ github.event.repository.name }}
+  # Set this to your local timezone. See https://www.wikiwand.com/en/List_of_tz_database_time_zones for valid strings.
+  Timezone: UTC
+  # Set this to the output folder for all of the generated files.
+  # Unless you have a very good reason to change this you should leave it as KiBotOutput.
+  OutputFolder: KiBotOutput
+
 jobs:
-  Documentation:
-    env:
-      # Set this to your local timezone. See https://www.wikiwand.com/en/List_of_tz_database_time_zones for valid strings.
-      Timezone: UTC
-      # Set this to the output folder for all of the generated files. Unless you have a very
-      # good reason to change this you should leave it as KiBotOutput.
-      OutputFolder: KiBotOutput
+  Kibot:
     runs-on: ubuntu-latest
 
     # These are all the steps that generate the files.
@@ -39,22 +30,18 @@ jobs:
       - name: Get GitHub commit hash
         id: get_version
         run: echo "::set-output name=version::$(git rev-parse --short HEAD)"
-
       # Get the current date and time, in the timezone specified above, for use later.
       - name: Get current date and time
         id: get_date
         run: echo "::set-output name=date::$(TZ='${{ env.Timezone }}' date +'%Y-%m-%d %T')"
 
-      # Do a string replacement in the schematic file to set the version and date.
-      # Any instance of %%version%% in the schematic gets replaced with the commit hash.
-      # Any instance of %%date%% in the schematic gets replaced with the release date and time.
+      # do string replacement in schematic files
       - name: Set schematic version
         uses: jacobtomlinson/gha-find-replace@v1
         with:
           include: ".*.sch"
           find: "%%version%%"
           replace: ${{ steps.get_version.outputs.version }}
-
       - name: Set schematic date
         uses: jacobtomlinson/gha-find-replace@v1
         with:
@@ -62,23 +49,19 @@ jobs:
           find: "%%date%%"
           replace: 'date "${{ steps.get_date.outputs.date }}"'
 
-      # Do a string replacement in the PCB file to set the version and date.
-      # Any instance of %%version%% in the schematic gets replaced with the commit hash.
-      # Any instance of %%date%% in the schematic gets replaced with the release date and time.
+      # do string replacement in design files
       - name: Set PCB version
         uses: jacobtomlinson/gha-find-replace@v1
         with:
           include: ".*.kicad_pcb"
           find: "%%version%%"
           replace: ${{ steps.get_version.outputs.version }}
-
       - name: Set PCB date in page settings
         uses: jacobtomlinson/gha-find-replace@v1
         with:
           include: ".*.kicad_pcb"
           find: "date %%date%%"
           replace: 'date "${{ steps.get_date.outputs.date }}"'
-
       - name: Set PCB date on PCB layers
         uses: jacobtomlinson/gha-find-replace@v1
         with:
@@ -86,30 +69,19 @@ jobs:
           find: "%%date%%"
           replace: ${{ steps.get_date.outputs.date }}
 
-      # Actually run KiBot to generate all the files. The KiBot script used is
-      # in the .kibot/ folder.
-      - name: Generate draft files
+      # Actually run KiBot to generate all the files.
+      - name: Generate documentation files
         uses: INTI-CMNB/KiBot@master
         if: ${{ success() }}
         with:
-          config: .kibot/draft.kibot.yaml
+          config: .kibot/documentation.kibot.yaml
           dir: ${{ env.OutputFolder }}
-          schema: ${{ github.event.repository.name }}.sch
-          board: ${{ github.event.repository.name }}.kicad_pcb
-
-      # get some debug info
-      - name: debug
-        if: ${{ failure() }}
-        run: |
-          ls -la ${{ env.OutputFolder }}
-          cat ${{ github.event.repository.name }}.kicad_pcb
-          cat ${{ github.event.repository.name }}.sch
+          schema: ${{ env.Project }}.sch
+          board: ${{ env.Project }}.kicad_pcb
 
       # Archive all the artifacts from output and attach to the action's results.
-      # This is so they're made available when this workflow is run manually from the
-      # GitHub actions page.
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ github.event.repository.name }}-${{ steps.get_version.outputs.version }}-draft
+          name: ${{ env.Project }}-${{ steps.get_version.outputs.version }}-draft
           path: ${{ env.OutputFolder }}/**

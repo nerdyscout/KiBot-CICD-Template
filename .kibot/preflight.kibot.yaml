@@ -1,19 +1,11 @@
-# This script is called by the .github/workflows/preflight.yml workflow to
-# run ERC and DRC checks on the design.
 kibot:
   version: 1
 
 preflight:
-  # These are off by default so it's possible to generate output files prior to the board being
-  # completely finished (e.g. for draft review, etc.). If you want to block pull requests from
-  # passing unless ERC and DRC pass then set these to true.
   run_erc: true
   run_drc: true
-  # This is important to set to true so replacement of version and date strings in the release
-  # build process works correctly.
   check_zone_fills: true
   ignore_unconnected: false
-  # bom generation needs updated xml file
   update_xml: false
 
   filters:

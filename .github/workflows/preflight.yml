@@ -1,8 +1,4 @@
-# This workflow runs erc and drc checks on every pull request that touches a schematic or PCB file.
-
-# To use this workflow in your own repo you need to edit the environment variables in the env: section
-# below.
-name: "Kibot - Preflight"
+name: "Preflight"
 
 on:
   push:
@@ -13,10 +9,12 @@ on:
       - ".kibot/*.kibot.yaml"
       - ".github/workflows/*.yml"
 
+env:
+  OutputFolder: KiBotOutput
+  Project: ${{ github.event.repository.name }}
+
 jobs:
-  Preflight:
-    env:
-      OutputFolder: KiBotOutput
+  Kibot:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,21 +22,21 @@ jobs:
 
       # Get the commit hash.
       - name: Get GitHub commit hash
-        id: get_version
-        run: echo "::set-output name=version::$(git rev-parse --short HEAD)"
+        id: vars
+        run: echo "::set-output name=commit::$(git rev-parse --short HEAD)"
 
       # Run KiBot with the preflight script
       - uses: INTI-CMNB/KiBot@master
         with:
           config: .kibot/preflight.kibot.yaml
           dir: ${{ env.OutputFolder }}
-          schema: ${{ github.event.repository.name }}.sch
-          board: ${{ github.event.repository.name }}.kicad_pcb
+          schema: ${{ env.Project }}.sch
+          board: ${{ env.Project }}.kicad_pcb
           verbose: 2
 
       # Archive all the artifacts from output and attach to the action's results.
       - name: Archive logfile artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ github.event.repository.name }}-${{ steps.get_version.outputs.version }}-preflight
+          name: ${{ env.Project }}-${{ steps.vars.outputs.commit }}-preflight
           path: ${{ env.OutputFolder }}/**.txt
