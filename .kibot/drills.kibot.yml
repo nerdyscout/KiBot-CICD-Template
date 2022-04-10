@@ -2,7 +2,7 @@ outputs:
   # Gerber drill format:
   # You can create a map file for documentation purposes.
   # This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
-  - name: 'drill'
+  - name: 'drills.gbr'
     comment: 'https://en.wikipedia.org/wiki/Gerber_format'
     type: gerb_drill
     dir: gerbers
@@ -27,7 +27,7 @@ outputs:
   # Excellon drill format:
   # You can create a map file for documentation purposes.
   # This output is what you get from the 'File/Fabrication output/Drill Files' menu in pcbnew.
-  - name: 'drill excellon'
+  - name: 'drills.drl'
     comment: 'https://en.wikipedia.org/wiki/Gerber_format'
     type: excellon
     dir: gerbers

@@ -1,5 +1,5 @@
 outputs:
-  - name: 'default black svg top'
+  - name: 'board_black_top.svg'
     comment: 'https://github.com/yaqwsx/PcbDraw'
     type: 'pcbdraw'
     dir: 'img/pcb'
@@ -39,7 +39,7 @@ outputs:
       # [string='visible'] [visible,all,none] using visible only the warnings about components in the visible side are generated
       warnings: 'none'
 
-  - name: 'default black svg bottom'
+  - name: 'board_black_bottom.svg'
     comment: 'https://github.com/yaqwsx/PcbDraw'
     type: 'pcbdraw'
     dir: 'img/pcb'
@@ -58,7 +58,7 @@ outputs:
       # [list(string)=[]] list of libraries
       libs: []
       # [boolean=false] mirror the board
-      mirror: true
+      mirror: false
       # [boolean=false] do not make holes transparent
       no_drillholes: false
       # [string='%f-%i%v.%x'] name for the generated file. Affected by global options

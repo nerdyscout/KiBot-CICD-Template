@@ -1,8 +1,9 @@
 outputs:
-  - name: 'hasl green svg top'
+  # For more information: https://github.com/INTI-CMNB/KiBoM
+  - name: 'enig green svg top'
     comment: 'https://github.com/yaqwsx/PcbDraw'
     type: 'pcbdraw'
-    dir: 'img/pcb/jlcpcb/green_hasl'
+    dir: 'img/pcb/jlcpcb/green_enig'
     options:
       # [boolean=false] render the bottom side of the board (default is top side)
       bottom: false
@@ -31,7 +32,7 @@ outputs:
       # The default is none
       show_components: none
       # [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options
-      style: '/usr/share/pcbdraw/styles/jlcpcb-green-hasl.json'
+      style: '/usr/share/pcbdraw/styles/jlcpcb-green-enig.json'
       # [string=''] Board variant to apply
       variant: ''
       # [boolean=false] render V-CUTS on the Cmts.User layer
@@ -39,10 +40,10 @@ outputs:
       # [string='visible'] [visible,all,none] using visible only the warnings about components in the visible side are generated
       warnings: 'none'
 
-  - name: 'hasl green svg bottom'
+  - name: 'enig green svg top'
     comment: 'https://github.com/yaqwsx/PcbDraw'
     type: 'pcbdraw'
-    dir: 'img/pcb/jlcpcb/green_hasl'
+    dir: 'img/pcb/jlcpcb/green_enig'
     options:
       # [boolean=false] render the bottom side of the board (default is top side)
       bottom: true
@@ -58,7 +59,7 @@ outputs:
       # [list(string)=[]] list of libraries
       libs: []
       # [boolean=false] mirror the board
-      mirror: true
+      mirror: false
       # [boolean=false] do not make holes transparent
       no_drillholes: false
       # [string='%f-%i%v.%x'] name for the generated file. Affected by global options
@@ -71,7 +72,7 @@ outputs:
       # The default is none
       show_components: none
       # [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options
-      style: '/usr/share/pcbdraw/styles/jlcpcb-green-hasl.json'
+      style: '/usr/share/pcbdraw/styles/jlcpcb-green-enig.json'
       # [string=''] Board variant to apply
       variant: ''
       # [boolean=false] render V-CUTS on the Cmts.User layer

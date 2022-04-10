@@ -1,6 +1,6 @@
-[![kibot](https://github.com/nerdyscout/KiBot-CICD-Template/actions/workflows/kibot.yaml/badge.svg)](https://github.com/nerdyscout/KiBot-CICD-Template/actions/workflows/kibot.yaml)
-[![platformio](https://github.com/nerdyscout/KiBot-CICD-Template/actions/workflows/platformio.yaml/badge.svg)](https://github.com/nerdyscout/KiBot-CICD-Template/actions/workflows/platformio.yaml)
-[![reuse](https://github.com/nerdyscout/KiBot-CICD-Template/actions/workflows/reuse.yaml/badge.svg)](https://github.com/nerdyscout/KiBot-CICD-Template/actions/workflows/reuse.yaml)
+[![kibot](https://github.com/nerdyscout/KiBot-CICD-Template/actions/workflows/kibot.yml/badge.svg)](https://github.com/nerdyscout/KiBot-CICD-Template/actions/workflows/kibot.yml)
+[![platformio](https://github.com/nerdyscout/KiBot-CICD-Template/actions/workflows/platformio.yml/badge.svg)](https://github.com/nerdyscout/KiBot-CICD-Template/actions/workflows/platformio.yml)
+[![reuse](https://github.com/nerdyscout/KiBot-CICD-Template/actions/workflows/reuse.yml/badge.svg)](https://github.com/nerdyscout/KiBot-CICD-Template/actions/workflows/reuse.yml)
 
 ---
 
@@ -32,8 +32,8 @@ The following documents are generated on every build:
    - schematic - PDF
 - img/
    - pcb/$fab/$style/
-      - PCB front - SVG
-      - PCB back - SVG
+      - PCB top - SVG
+      - PCB bottom - SVG
    - render/ (disabled)
       - PCB render - PNG
    - schematic - SVG

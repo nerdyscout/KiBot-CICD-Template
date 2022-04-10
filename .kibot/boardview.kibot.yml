@@ -1,5 +1,5 @@
 outputs:
-  - name: 'Example of board view export'
+  - name: 'openboardview.brd'
     comment: 'https://openboardview.org/'
     type: boardview
     dir: cad

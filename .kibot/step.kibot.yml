@@ -1,5 +1,5 @@
 outputs:
-  - name: 'step'
+  - name: 'model.step'
     comment: 'Renders - 3D model (STEP)'
     type: step
     dir: cad

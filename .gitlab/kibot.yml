@@ -1,0 +1,119 @@
+variables:
+    SCHEMA: "pcb/*.kicad_sch"
+    BOARD: "pcb/*.kicad_pcb"
+    DIR: "pcb/"
+
+default:
+  timeout: 5m
+  image: setsoft/kicad_auto:dev_k6
+  artifacts:
+    exclude:
+    - $OUTDIR/**/*.ogv
+
+stages:
+  - check
+  - export
+  - publish
+ 
+# JOBS
+ 
+# runs design checks
+ERC:
+  stage: check
+  script:
+      - kibot -c kibot.yml -e $SCHEMA -b $BOARD -d $$DIR -s run_drc -v -i
+  artifacts:
+    when: always
+    name: $CI_PROJECT_NAME $CI_JOB_NAME
+    paths:
+     - '*-erc.txt'
+ 
+DRC:
+  stage: check
+  allow_failure: true
+  script:
+      - kibot -c kibot.yml -e $SCHEMA -b $BOARD -d $$DIR -s run_erc -v -i
+  artifacts:
+    when: always
+    name: $CI_PROJECT_NAME $CI_JOB_NAME
+    paths:
+      - '*-drc.txt'
+
+# documentation
+docs:
+  needs: [ERC]
+  stage: export
+  allow_failure: true
+  script:
+    - kibot -c kibot.yml -e $SCHEMA -b $BOARD -d $$DIR -s run_erc,run_drc -v \
+        ibom.html octopart.csv schematic.pdf schematic.svg board_top.pdf board_bottom.pdf
+  artifacts:
+    name: $CI_PROJECT_NAME $CI_JOB_NAME
+    paths:
+      - docs/*.pdf
+      - docs/datasheets/*.pdf
+      - docs/bom/*
+      - img/*.svg
+
+# fabrications
+gerbers:
+  needs: [DRC]
+  stage: export
+  allow_failure: false
+  script:
+    - kibot -c kibot.yml -e $SCHEMA -b $BOARD -d $$DIR -s run_erc,run_drc -v \
+        gerbers.gbr drills.gbr drills.drl pickandplace.csv bom.csv
+  artifacts:
+    name: $CI_PROJECT_NAME $CI_JOB_NAME
+    paths:
+      - pcb/${CI_PROJECT_TITLE}_gerbers.zip
+
+# cad
+cad:
+  needs: [DRC]
+  stage: export
+  allow_failure: true
+  script:
+    - kibot -c kibot.yml -e $SCHEMA -b $BOARD -d $$DIR -s run_erc,run_drc -v \
+        model.step openboardview.brd autocad.dxf
+  artifacts:
+    name: $CI_PROJECT_NAME $CI_JOB_NAME
+    paths:
+      - cad/**/*
+
+# render
+render:
+  needs: [DRC]
+  stage: export
+  allow_failure: true
+  script:
+    - kibot -c kibot.yml -e $SCHEMA -b $BOARD -d $$DIR -s run_erc,run_drc -v \
+        board_black_top.svg board_black_bottom.svg
+#  after_script:
+#    - mv img/* .
+  artifacts:
+    name: $CI_PROJECT_NAME $CI_JOB_NAME
+    paths:
+      - img/pcb/*.svg
+      - img/pcb/**/*.svg
+      - img/render/*.png
+
+# upload assets
+upload:
+  dependencies: [gerbers, docs, render, cad]
+  stage: publish
+#  rules:
+#    - if: $CI_COMMIT_TAG
+  script:
+    - mkdir -p img/render img/pcb
+    - mv $SCHEMATIC .
+    - mv $BOARD .
+    - mv $PROJECT .
+  artifacts:
+    name: "$CI_PROJECT_NAME pcb $CI_COMMIT_TAG"
+    paths:
+      - docs/**/*
+      - img/**/*
+      - cad/*
+      - '*gerbers.zip'
+      - '*.kicad_*'

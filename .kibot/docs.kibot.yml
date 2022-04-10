@@ -1,20 +1,21 @@
 outputs:
   # For more information: https://github.com/INTI-CMNB/KiBoM
-  - name: 'print schema pdf'
-    comment: "Print schematic (PDF)"
+  - name: 'schematic.pdf'
+    comment: "generate schematic (PDF)"
     type: pdf_sch_print
     dir: docs
     options:
       output: '%f-%i.%x' #[string='%f-%i%v.%x'] filename for the output PDF (%i=schematic %x=pdf). Affected by global options.
 
-  - name: 'print schema svg'
-    comment: "Print schematic (SVG)"
+  - name: 'schematic.svg'
+    comment: "generate schematic (SVG)"
     type: svg_sch_print
     dir: img
     options:
       output: '%f-%i.%x' #[string='%f-%i%v.%x'] filename for the output SVG (%i=schematic %x=svg). Affected by global options.
 
-  - name: 'print board documentation front'
+  - name: 'board_top.pdf'
+    comment: "generate board top (PDF)"
     type: 'pdf_pcb_print'
     dir: 'docs'
     options:
@@ -28,7 +29,7 @@ outputs:
       # [boolean=false] Print in black and white
       monochrome: false
       # [string='%f-%i%v.%x'] Filename for the output PDF (%i=layers, %x=pdf). Affected by global options
-      output: '%f-board_front.%x'
+      output: '%f-board_top.%x'
       # `output_name` is an alias for `output`
       # [boolean=true] Include the title-block
       plot_sheet_reference: true
@@ -44,7 +45,8 @@ outputs:
       - 'Cmts.User'
       - 'Edge.Cuts'
 
-  - name: 'print board documentation back'
+  - name: 'board_bottom.pdf'
+    comment: "generate board bottom (PDF)"
     type: 'pdf_pcb_print'
     dir: 'docs'
     options:
@@ -58,7 +60,7 @@ outputs:
       # [boolean=false] Print in black and white
       monochrome: false
       # [string='%f-%i%v.%x'] Filename for the output PDF (%i=layers, %x=pdf). Affected by global options
-      output: '%f-board_back.%x'
+      output: '%f-board_bottom.%x'
       # `output_name` is an alias for `output`
       # [boolean=true] Include the title-block
       plot_sheet_reference: true
@@ -73,4 +75,3 @@ outputs:
       - 'B.Mask'
       - 'Dwgs.User'
       - 'Edge.Cuts'
-

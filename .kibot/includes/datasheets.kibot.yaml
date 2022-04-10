@@ -1,4 +1,0 @@
-outputs:
-  - name: 'download datasheets'
-    type: download_datasheets
-    dir: docs/datasheets

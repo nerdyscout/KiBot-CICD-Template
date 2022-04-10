@@ -64,7 +64,7 @@ filters:
       - ["^RP2040-QFN-56", 270]
 
 outputs:
-  - name: JLCPCB_gerbers
+  - name: gerbers_jlcpcb.gbr
     comment: Gerbers - JLCPCB
     type: gerber
     dir: gerbers/jlcpcb
@@ -132,7 +132,7 @@ outputs:
     type: bom
     dir: gerbers/jlcpcb
     options:
-      output: "%f_%i.%x"
+      output: "%f-%i-%r.%x"
       exclude_filter: only_jlc_parts
       ref_separator: ","
       columns:

@@ -15,6 +15,6 @@ Files: src/* lib/* include/* test/*
 Copyright: 2022, nerdyscout <nerdyscout@posteo.de>
 License: GPL-3.0-or-later
 
-Files: .gitignore .kibot/* platformio.ini .gitlab-ci.yml
+Files: .gitignore .kibot/* *.yml *.ini
 Copyright: 2022, nerdyscout <nerdyscout@posteo.de>
 License: CC0-1.0

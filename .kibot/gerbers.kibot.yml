@@ -1,7 +1,7 @@
 outputs:
   # For more information: https://github.com/INTI-CMNB/KiBoM
-  - name: "https://en.wikipedia.org/wiki/Gerber_format"
-    comment: "Gerbers"
+  - name: "gerbers.gbr"
+    comment: "https://en.wikipedia.org/wiki/Gerber_format"
     type: 'gerber'
     dir: 'gerbers'
     options:
@@ -18,13 +18,13 @@ outputs:
       # [boolean=false] include references and values even when they are marked as invisible
       force_plot_invisible_refs_vals: false
       # [string='%f-%i%v.%x'] name for the gerber job file (%i='job', %x='gbrjob'). Affected by global options
-      gerber_job_file: '%f-%i.%x'
+      gerber_job_file: '%f-%i-%r.%x'
       # [number=4.6] this the gerber coordinate format, can be 4.5 or 4.6
       gerber_precision: 4.6
       # [number=0.1] [0.02,2] line_width for objects without width [mm]
       line_width: 0.1
       # [string='%f-%i%v.%x'] output file name, the default KiCad name if empty. Affected by global options
-      output: '%f-%i.%x'
+      output: '%f-%i-%r.%x'
       # [boolean=true] include the footprint references
       plot_footprint_refs: true
       # [boolean=true] include the footprint values
@@ -52,24 +52,3 @@ outputs:
       - 'B.Mask'
       - 'F.SilkS'
       - 'B.SilkS'
-
-  - name: 'position files'
-    comment: '*_pos.csv'
-    type: 'position'
-    dir: 'gerbers'
-    options:
-      # [string|list(string)=''] Name of the filter to mark components as not fitted.
-      # A short-cut to use for simple cases where a variant is an overkill
-      dnf_filter: '_mechanical'
-      # [string='ASCII'] [ASCII,CSV] format for the position file
-      format: 'CSV'
-      # [boolean=true] only include the surface mount components
-      only_smd: true
-      # [string='%f-%i%v.%x'] output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'). Affected by global options
-      output: '%f-%i.%x'
-      # [boolean=true] generate two separated files, one for the top and another for the bottom
-      separate_files_for_front_and_back: true
-      # [string='millimeters'] [millimeters,inches] units used for the positions
-      units: 'millimeters'
-      # [string=''] Board variant to apply
-      variant: ''

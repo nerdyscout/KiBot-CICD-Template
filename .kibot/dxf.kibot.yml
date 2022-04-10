@@ -1,7 +1,7 @@
 outputs:
   # DXF (Drawing Exchange Format):
   # This output is what you get from the File/Plot menu in pcbnew.
-  - name: 'Exports the PCB to 2D mechanical EDA tools (like AutoCAD).'
+  - name: 'autocad.dxf'
     comment: 'https://en.wikipedia.org/wiki/AutoCAD_DXF'
     type: dxf
     dir: 'cad/dxf'

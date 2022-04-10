@@ -1,5 +1,5 @@
 outputs:
-  - name: 'Generates a spreadsheet containing components costs.'
+  - name: 'kicost.xlsx'
     comment: 'https://github.com/hildogjr/KiCost'
     type: 'kicost'
     dir: 'docs/bom'

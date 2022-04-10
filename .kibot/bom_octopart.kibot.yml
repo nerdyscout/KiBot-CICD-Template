@@ -1,8 +1,8 @@
 outputs:
-  - name: 'gerbers/bom.csv - octopart'
+  - name: 'octopart.csv'
     comment: 'https://octopart.com/'
     type: 'kibom'
-    dir: 'gerbers'
+    dir: 'docs/bom'
     options:
       # [string|dict] BoM configuration file, relative to PCB.
       # You can also define the configuration here, will be stored in `config.kibom.ini`
@@ -66,7 +66,7 @@ outputs:
           - column: Part
             regex: Jumper
         # [string='Config'] Field name used to determine if a particular part is to be fitted (also DNC and variants)
-        fit_field: 'Variant'
+        fit_field: 'Config'
         # [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector
         group_connectors: true
         # [list(string)] List of fields used for sorting individual components into groups.
