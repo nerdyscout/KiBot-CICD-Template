@@ -6,7 +6,7 @@
 
 # KiCAD-CICD-Template
 
-This repository provides different CI/CD workflows used for projects using [KiCAD](https://www.kicad.org/) and [PlatformIO](https://www.platformio.org).
+This repository provides different CI/CD workflows used for projects using [KiCAD](https://www.kicad.org/) and [PlatformIO](https://platformio.org).
 
 ## workflows
 
