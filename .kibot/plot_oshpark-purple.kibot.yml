@@ -14,7 +14,7 @@ outputs:
       placeholder: false
       remap:
       show_components: none
-      style: '/usr/share/pcbdraw/styles/oshpark-purple.json'
+      style: 'oshpark-purple'
       vcuts: true
       warnings: 'none'
 
@@ -33,6 +33,6 @@ outputs:
       placeholder: false
       remap:
       show_components: none
-      style: '/usr/share/pcbdraw/styles/oshpark-purple.json'
+      style: 'oshpark-purple'
       vcuts: true
       warnings: 'none'
